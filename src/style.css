@@ -1,0 +1,505 @@
+@import url('https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:ital,wght@0,300;0,400;0,500;1,700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+    font-family: "Alegreya Sans SC";
+}
+
+body {
+    padding-bottom: 300px;
+}
+
+::-moz-selection {
+    color: #ffffff;
+    background: rgb(0, 0, 0);
+}
+
+::selection {
+    color: #ffffff;
+    background: rgb(0, 0, 0);
+}
+
+#container {
+    max-width: 1000px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+header {
+    display: flex;
+    justify-content: center;
+    padding: 3px;
+    background: #000;
+}
+
+header span {
+    font-size: 2.5em;
+    color: #fff;
+}
+
+section {
+    font-size: 1.7rem;
+    padding: 1em .5em;
+    display: flex;
+    flex-direction: column;
+}
+
+section * {
+    font-size: 1em;
+}
+
+.section-heading {
+    font-weight: 500;
+    margin: .3em 0 .15em 0;
+}
+
+.italic-heading {
+    font-weight: 300;
+    /* font-style: italic; */
+}
+
+fieldset {
+    border: none;
+}
+
+table {
+    width: 100%;
+    margin-bottom: 1em;
+}
+
+td {
+    width: 50%;
+}
+
+input {
+    border-radius: 7px;
+    border: 1px solid #000;
+    padding: .1em .3em;
+    transition: .2s;
+}
+
+
+input[type="checkbox"] {
+    display: none;
+}
+
+input[type="checkbox"]+label {
+    display: inline-block;
+    position: relative;
+    padding-left: 1em;
+    /* Adjust this value to change the size of the checkbox */
+    cursor: pointer;
+    display: flex;
+    align-items: start;
+}
+
+/* Create the checkbox shape */
+input[type="checkbox"]+label:before {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    top: .17em;
+    left: 0;
+    height: .8em;
+    width: .8em;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    border-radius: 5px;
+    transition: .15s
+}
+
+/* Style the checkbox when checked */
+input[type="checkbox"]:checked+label::before {
+    background-color: #010101;
+    border: none;
+}
+
+/* Style the checkmark */
+input[type="checkbox"]+label:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+input[type="checkbox"]+label:active::before {
+    transform: scale(1.1);
+}
+
+input[type="checkbox"]+label:active::after {
+    transform: scale(1.1);
+}
+
+input[type="checkbox"]:checked+label:after {
+    display: block;
+}
+
+input[type="checkbox"]:checked+label:after {
+    left: .22em;
+    top: .2em;
+    width: .3em;
+    height: .5em;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+input[type='text']:focus {
+    outline: 1px solid #000;
+}
+
+input[type=text]:disabled {
+    background: #e3e3e3;
+}
+
+input[type=text]:disabled::placeholder {
+    color: #ababab;
+}
+
+#divider-col-name {
+    margin-top: .2em;
+}
+
+.go-next-btn {
+    color: #fff;
+    background: #000;
+    border: none;
+    border-radius: 10px;
+    margin: 1em 0;
+    padding: .3em;
+    width: 100%;
+    transition: .2s;
+}
+
+.go-next-btn:hover {
+    background: #343434;
+}
+
+.go-next-btn:active {
+    background: #000000;
+}
+
+.file-picker-wrapper {
+    display: flex;
+    gap: .3em;
+}
+
+#main-file-input {
+    display: none;
+}
+
+.pick-file-btn {
+    background: #EFEFEF;
+    border: 1px solid #787878;
+    border-radius: 5px;
+    padding: 1px 10px;
+    transition: .15s;
+}
+
+.pick-file-btn:hover {
+    background: #727272;
+    color: #fff;
+}
+
+.pick-file-btn:active {
+    background: #000000;
+}
+
+.picked-file {
+    display: flex;
+    gap: .3em;
+    justify-content: space-between;
+    flex-grow: 1;
+    border: 1px solid #4F4F4F;
+    border-radius: 10px;
+    padding: .1em .3em;
+}
+
+.picked-file>span:first-child {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.remove-file-btn {
+    display: flex;
+    align-items: center;
+    user-select: none;
+    font-size: .7em;
+}
+
+.remove-file-btn:hover {
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.remove-file-btn:active {
+    transform: scale(1.1);
+}
+
+
+#columns-section input[type='text'],
+#final-section input[type='text'] {
+    width: 100%;
+}
+
+.droppable-area {
+    display: flex;
+    flex-direction: column;
+    gap: .1em;
+}
+
+.draggable-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #000;
+    border-radius: 10px;
+    padding: .2em;
+    user-select: none;
+}
+
+.draggable-item:hover .col-letter {
+    display: none;
+}
+
+.draggable-item:hover .remove-btn {
+    display: flex;
+}
+
+.draggable-item .remove-btn:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+}
+
+.draggable-item .left-part {
+    display: flex;
+    gap: .4em;
+}
+
+.item-parameters-btn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.3em;
+    height: 1.3em;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.item-parameters-btn:hover {
+    outline: 1px solid #a8a8a8;
+}
+
+.item-parameters-btn:active {
+    transform: scale(1.03);
+}
+
+.draggable-item .right-part {
+    display: flex;
+    gap: .3em;
+}
+
+.drag-burger {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 1.1em;
+    margin-left: .1em;
+    padding: .1em 0;
+}
+
+.drag-burger div {
+    background: #000;
+    border-radius: 10px;
+    height: 2px;
+    width: 100%;
+}
+
+.col-letter,
+.remove-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 1.3em;
+    height: 1.3em;
+    padding: 0 .3em;
+    border: 1px solid #000;
+    border-radius: 5px;
+}
+
+.draggable-item .remove-btn {
+    display: none;
+    border: none;
+    transition: .2s;
+}
+
+.new-item-btn,
+.confirm-new-item-btn {
+    position: relative;
+    width: 100%;
+    background: #fff;
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: .2em;
+    margin: .3em 0;
+    text-align: center;
+    transition: .15s;
+}
+
+.cancel-new-item-btn {
+    /* background: #efefef; */
+    outline: none;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    margin-top: .4em;
+}
+
+.cancel-new-item-btn:hover {
+    text-decoration: underline;
+}
+
+.new-item-btn::before {
+    content: '+';
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* left: .3em; */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1em;
+    height: 1em;
+    border: 1px solid #000;
+    border-radius: 5px;
+}
+
+.new-item-btn:hover,
+.confirm-new-item-btn:hover {
+    background: #000;
+    color: #fff;
+}
+
+.new-item-btn:hover::before {
+    border-color: #fff;
+    transition: .15s;
+}
+
+.new-item-btn:active {
+    background: #4e4e4e;
+}
+
+select {
+    position: relative;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 100%;
+    color: #060606;
+    background: #f1f1f1;
+    padding: .3em .5em;
+    border: 1px solid #000000;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.subsection {
+    margin: 1em 0;
+}
+
+input.invalid-data,
+input.invalid-data:focus {
+    outline: 1px solid red;
+}
+
+input.invalid-data:disabled {
+    outline: none;
+}
+
+input[type="checkbox"]+label.invalid-data::before {
+    background: red;
+}
+
+.two-cols {
+    display: flex;
+    gap: .3em;
+}
+
+.two-cols>* {
+    width: 50%;
+}
+
+.loader {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: .7em;
+    width: 100%;
+    padding: 1em 0;
+    font-size: 1em;
+    color: #4e4e4e;
+}
+
+.download-link {
+    text-align: center;
+    background: #000;
+    color: #fff;
+    border-radius: 10px;
+    padding: .3em;
+    margin-top: 2em;
+    transition: .3s;
+    box-shadow: inset 0 0 10px 0 #242424;
+}
+
+.download-link:hover {
+    background: #353535;
+}
+
+.download-link:active {
+    background: #000000;
+}
+
+.formula-input-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: .1em;
+    padding: .1em 0;
+    margin-bottom: .3em;
+}
+
+.input-col-letter-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .2em;
+}
+
+.input-col-letter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: .1em .45em;
+    border: 1px solid #000;
+    border-radius: 5px;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    transition: .15s;
+}
+
+.input-col-letter:hover {
+    background: #000;
+    color: #fff;
+}
+
+.input-col-letter:active {
+    background: rgb(44, 44, 44);
+    transform: scale(1.03);
+}
