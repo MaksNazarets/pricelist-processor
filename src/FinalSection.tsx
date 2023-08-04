@@ -28,6 +28,18 @@ export const getColumnLetters = (columnNumber: number) => {
   return columnLetter;
 }
 
+function getChangedLettersDictionary(initialArray: string[], changedArray: string[]) {
+  let result: { [key: string]: string } = {};
+
+  for (let i = 0; i < initialArray.length; i++) {
+    const initialElement = initialArray[i];
+    const changedIndex = changedArray.indexOf(initialElement);
+    result[getColumnLetters(i + 1)] = getColumnLetters(changedIndex + 1);
+  }
+
+  return result;
+}
+
 const FinalSection = () => {
   const { fileUploaded, fileInputRef } = useContext(MainContext)
   const [newColumnFillingMethod, setNewColumnFillingMethod] = useState<string | null>(null)
@@ -49,21 +61,61 @@ const FinalSection = () => {
   const [downloadLink, setDownloadLink] = useState<string>('')
   const [isWaitingForResponse, setIsWaitingForResponse] = useState(false)
 
-
   useEffect(() => {
     setDownloadLink('')
   }, [fileUploaded, newColumns, itemList])
 
+
   const handleDrop = (droppedItem: DropResult) => {
     // Ignore drop outside droppable container
     if (!droppedItem.destination) return;
-    var updatedList = [...itemList];
+    let updatedList = [...itemList];
     // Remove dragged item
     const [reorderedItem] = updatedList.splice(droppedItem.source.index, 1);
     // Add dropped item
     updatedList.splice(droppedItem.destination.index, 0, reorderedItem);
     // Update State
     setItemList(updatedList);
+
+    let lettersChanged = getChangedLettersDictionary(itemList, updatedList) || {};
+    console.log('lettersChanged:', lettersChanged)
+
+    newColumns.forEach(col => {
+      if (col.fillingMethod.name === 'formula') {
+        let colScopeOpened = false;
+        let currentColLetters = '';
+        let currentColLetterStartIndex = 0;
+        let newFormulaText: Array<string> = [...col.fillingMethod.formulaText];
+
+        [...col.fillingMethod.formulaText].forEach((char, index) => {
+
+          if (char === '⌯') {
+            if (!colScopeOpened) currentColLetterStartIndex = index + 1
+            else {
+              if (lettersChanged[currentColLetters])
+                newFormulaText.splice(currentColLetterStartIndex, currentColLetters.length, ...(lettersChanged[currentColLetters]))
+
+              currentColLetters = ''
+            }
+
+            colScopeOpened = !colScopeOpened;
+          }
+          else if (colScopeOpened) {
+            currentColLetters += char
+          }
+        })
+
+        let newColsList = [...newColumns];
+
+        newColsList.forEach((column, index) => {
+          if (column.name === col.name) { 
+            newColsList[index].fillingMethod.formulaText = newFormulaText.join('')
+          }
+        })
+
+        setNewColumns(newColsList)
+      }
+    });
   };
 
   const removeItem = (colName: string) => {
@@ -109,6 +161,7 @@ const FinalSection = () => {
     })
     setNewColumnName('')
     setNewColumnFillingMethod(null)
+    setNewColFillingMethodParams(null)
   }
 
   // const showItemParameters = (colName: string) => {

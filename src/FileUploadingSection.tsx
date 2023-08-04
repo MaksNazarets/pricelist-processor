@@ -30,7 +30,7 @@ const FileUploadingSection = () => {
                         'Content-Type': 'multipart/form-data'
                     }
                 }).then((response) => {
-                    console.log('Success: ', response.data)
+                    // console.log('Success: ', response.data)
                     setIsWaitingForResponse(current => [false, current[1]])
                     setIsSuccessfullConnection(true)
                     setSheetList(response.data)
@@ -97,7 +97,7 @@ const FileUploadingSection = () => {
                 'Content-Type': 'multipart/form-data'
             }
         }).then((response) => {
-            console.log(response.data);
+            // console.log(response.data);
             setIsWaitingForResponse(current => [current[0], false])
 
             setFileUploaded((current: file) => {
@@ -133,7 +133,7 @@ const FileUploadingSection = () => {
                         onClick={() => { fileInputRef.current!.click() }}>Вибрати файл</button>
                     <div className="picked-file">
                         <span>{fileUploaded.fileName || fileNotUploadedText}</span>
-                        {fileUploaded && <span className="remove-file-btn" onClick={() => resetSelectedFile()}>&#x2715;</span>}
+                        {fileUploaded.fileName && <span className="remove-file-btn" onClick={() => resetSelectedFile()}>&#x2715;</span>}
                     </div>
                 </div>
 

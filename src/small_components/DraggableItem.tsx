@@ -52,11 +52,17 @@ export const DraggableItem = ({ provided, colName, isNewColumn, fillingMethod, l
                 {
                   fillingMethod &&
                   Object.entries(fillingMethod).map(([key, value]: [string, any]) => {
-                    if (key !== 'name')
+                    if (key !== 'name') {
+                      let valstr = value.toString()
+
+                      if (typeof (value) === 'boolean')
+                        valstr = value ? 'так' : 'ні'
+
                       return <React.Fragment key={key}>
-                        <span><b>{fillingMethodPropertyName[key] || key}: </b> {value.toString()}</span>
+                        <span><b>{fillingMethodPropertyName[key] || key}: </b> {valstr}</span>
                         <br />
                       </React.Fragment>
+                    }
                   })
                 }
               </div>
