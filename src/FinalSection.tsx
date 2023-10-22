@@ -28,13 +28,13 @@ export const getColumnLetters = (columnNumber: number) => {
   return columnLetter;
 }
 
-function getChangedLettersDictionary(initialArray: string[], changedArray: string[]) {
+const getChangedLettersDictionary = (initialArray: string[], changedArray: string[]) => {
   let result: { [key: string]: string } = {};
 
   for (let i = 0; i < initialArray.length; i++) {
     const initialElement = initialArray[i];
     const changedIndex = changedArray.indexOf(initialElement);
-    result[getColumnLetters(i + 1)] = getColumnLetters(changedIndex + 1);
+    result[getColumnLetters(i + 1)] = getColumnLetters(changedIndex + 1) || ' '.repeat(getColumnLetters(i + 1).length);
   }
 
   return result;
@@ -58,11 +58,11 @@ const FinalSection = () => {
     return list
   })
 
-  const [downloadLink, setDownloadLink] = useState<string>('')
+  const [downloadFilename, setDownloadFilename] = useState<string>('')
   const [isWaitingForResponse, setIsWaitingForResponse] = useState(false)
 
   useEffect(() => {
-    setDownloadLink('')
+    setDownloadFilename('')
   }, [fileUploaded, newColumns, itemList])
 
 
@@ -108,7 +108,7 @@ const FinalSection = () => {
         let newColsList = [...newColumns];
 
         newColsList.forEach((column, index) => {
-          if (column.name === col.name) { 
+          if (column.name === col.name) {
             newColsList[index].fillingMethod.formulaText = newFormulaText.join('')
           }
         })
@@ -118,10 +118,57 @@ const FinalSection = () => {
     });
   };
 
-  const removeItem = (colName: string) => {
-    setItemList(current => {
-      return current.filter(col => col !== colName)
-    })
+  const removeItem = (colName: string) => { // finish the function
+
+    const newList = itemList.filter(col => col !== colName)
+
+    setItemList(newList)
+
+    let lettersChanged = getChangedLettersDictionary(itemList, newList) || {};
+    console.log('lettersChanged:', lettersChanged)
+
+    newColumns.forEach(col => {
+      if (col.fillingMethod.name === 'formula') {
+        let colScopeOpened = false;
+        let currentColLetters = '';
+        let currentColLetterStartIndex = 0;
+        let newFormulaText: Array<string> = [...col.fillingMethod.formulaText];
+
+        [...col.fillingMethod.formulaText].forEach((char, index) => {
+
+          if (char === '⌯') {
+            if (!colScopeOpened) currentColLetterStartIndex = index + 1
+            else {
+              newFormulaText.splice(currentColLetterStartIndex, currentColLetters.length, ...(lettersChanged[currentColLetters]))
+
+              if (!lettersChanged[currentColLetters].trim()) {
+                newFormulaText.splice(currentColLetterStartIndex - 1, 1, ' ')
+                newFormulaText.splice(currentColLetterStartIndex + lettersChanged[currentColLetters].length, 1, ' ')
+              }
+
+              currentColLetters = ''
+            }
+
+            colScopeOpened = !colScopeOpened;
+          }
+          else if (colScopeOpened) {
+            currentColLetters += char
+          }
+        })
+
+        let newColsList = [...newColumns];
+
+        let normalizedNewFormulaText = newFormulaText.join('').replace(/\s+/g, ' ').trim()
+        
+        newColsList.forEach((column, index) => {
+          if (column.name === col.name) {
+            newColsList[index].fillingMethod.formulaText = normalizedNewFormulaText
+          }
+        })
+
+        setNewColumns(newColsList)
+      }
+    });
 
     setNewColumns(current => {
       return current.filter(col => col.name !== colName)
@@ -164,12 +211,6 @@ const FinalSection = () => {
     setNewColFillingMethodParams(null)
   }
 
-  // const showItemParameters = (colName: string) => {
-  //   const col = newColumns.filter(col => col.name = colName)[0]
-  //   console.log(col.fillingMethod.name, col.fillingMethod.formulaText,
-  //     col.fillingMethod.unique)
-  // }
-
   const sendData = () => {
     const formData = new FormData();
     formData.append('file', fileInputRef.current.files[0]);
@@ -188,7 +229,7 @@ const FinalSection = () => {
       }
     }).then((response) => {
       console.log(response.data);
-      setDownloadLink(response.data)
+      setDownloadFilename(response.data.filename)
       setIsWaitingForResponse(false)
     }).catch((error) => {
       console.log(error)
@@ -336,7 +377,7 @@ const FinalSection = () => {
       }
 
       {!newColumnFillingMethod &&
-        !downloadLink &&
+        !downloadFilename &&
         !isWaitingForResponse &&
         <button
           className="go-next-btn"
@@ -350,10 +391,10 @@ const FinalSection = () => {
         </span>
       }
 
-      {downloadLink &&
+      {downloadFilename &&
         <a
           className="download-link"
-          href={`${serverUrl}/download-file?filename=${downloadLink}`}
+          href={`${serverUrl}/download-file?filename=${downloadFilename}`}
           download>Завантажити відформатований файл</a>
       }
     </section>

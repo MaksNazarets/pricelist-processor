@@ -90,8 +90,6 @@ def format_pricelist():
         old_ws = get_ws_with_category_column(old_ws, old_start_col, old_start_row, len(
             cols_renamed.keys()), category_col_name)
 
-    # old_wb.save('files/testing-category.xlsx')
-
     header_font = Font(bold=True)
     header_alignment = Alignment(horizontal="center", vertical="center")
     header_fill = PatternFill(fill_type="solid", fgColor="B7DDE8")
@@ -133,6 +131,7 @@ def format_pricelist():
                     new_ws.cell(row=row, column=index +
                                 1, value=old_cell_value)
 
+    repeats = []
 
     for i, (index, item_name) in enumerate(new_cols_items):
         col_index = new_cols_names.index(item_name)
@@ -152,10 +151,12 @@ def format_pricelist():
             formula_text = new_columns[col_index]['fillingMethod']['formulaText']
             unique = new_columns[col_index]['fillingMethod']['unique']
 
+            if unique:
+                values = []
+
             process_rows = True
             for row in range(2, old_ws.max_row + 1):
-
-                f = ''
+                cell_val = ''
                 col_scope_opened = False
                 col_letter_index = ''
                 for c in formula_text:
@@ -166,13 +167,14 @@ def format_pricelist():
                             letter_coords = f'{col_letter_index}{row}'
                             _, col = coordinate_to_tuple(letter_coords)
 
-                            if col > i + 1:  
-                                # add to the end of list
+                            if (col - 1, item_list[col - 1]) in new_cols_items:
+
                                 new_cols_items.append((index, item_name))
+
                                 process_rows = False
                                 break
 
-                            f += f"{new_ws[letter_coords].value or ''}"
+                            cell_val += f"{new_ws[letter_coords].value or ''}"
                             col_letter_index = ''
                         else:
                             col_scope_opened = True
@@ -181,35 +183,59 @@ def format_pricelist():
                         col_letter_index += c
 
                     else:
-                        f += f'{c}'
+                        cell_val += f'{c}'
 
                 if not process_rows:
                     break
 
-                new_ws.cell(row=row, column=index + 1, value=f)
+                new_ws.cell(row=row, column=index + 1, value=cell_val)
 
                 # TODO: Implement unique value handling
+                  # Треба робити прохід по готовій таблиці в окремому циклі перед кінцевим return
+                # if unique:
+                #   if cell_val in values:
+                #       first_entry_row = values.index(cell_val) + 1
+                #       if first_entry_row not in repeats:
+                #           repeats.append(first_entry_row)
+                #       repeats.append(row)
+                #       print(f"repeats: {repeats}")
+                #   else:
+                #       values.append(cell_val)
+                # else:
+                #     values.append(cell_val)
 
+                ######
         else:
             continue
 
-    filename = f'test_{datetime.now().strftime("%Y%m%d%H%M%S")}.xlsx'
-    path = os.path.join('files', filename)
+        new_cols_items[i] = False
+
+    filename = f'test_{datetime.now().strftime("%Y%m%d_%H%M%S")}.xlsx'
 
     try:
-        new_wb.save(path)
+        new_wb.save(os.path.join('files', filename))
     except Exception as e:
         print(e)
         return 'file save error', 501
 
-    return path, 200
+    rows_with_repeats = []
+
+    for row in repeats:
+        row_cells = []
+        for cell in new_ws[row]:
+            row_cells.append(cell.value)
+
+        rows_with_repeats.append({'cells': row_cells, 'row_number': row})
+    return {
+        'filename': filename,
+        'repetitions': rows_with_repeats or None}, 200
 
 
 @app.route('/download-file', methods=['GET'])
 def download_file():
     filename = request.args.get('filename')
 
-    return send_file(filename, as_attachment=True)
+    return send_file(os.path.join('files', filename), as_attachment=True)
 
 
 if __name__ == '__main__':

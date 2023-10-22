@@ -1,1 +1,1 @@
-export const serverUrl = 'https://maksnazarets.pythonanywhere.com/';
+export const serverUrl = 'http://localhost:5000';
